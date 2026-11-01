@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Credit Risk Model</title>
+<style>
+body { font-family: system-ui, sans-serif; max-width: 860px; margin: 40px auto; padding: 0 16px; line-height: 1.55; color: #1f2328; }
+table { border-collapse: collapse; width: 100%; font-size: 0.95em; } th, td { border: 1px solid #d0d7de; padding: 6px 10px; text-align: left; }
+code, pre { background: #f6f8fa; } pre { padding: 12px; overflow-x: auto; } img { max-width: 100%; }
+.src { font-size: 0.9em; color: #57606a; }
+</style></head><body>
+<p class="src">Source code: <a href="https://github.com/Akshu577/credit-risk-model">github.com/Akshu577/credit-risk-model</a></p>
+<h1>Credit Risk Model</h1>
+<p>Predicts whether a loan applicant is a bad credit risk, using the public German Credit dataset (1,000 applicants, UCI / OpenML <code>credit-g</code>). The model is judged on what errors cost the bank, not only on accuracy.</p>
+<h2>Why cost matters</h2>
+<p>The dataset comes with a cost matrix: approving a borrower who defaults costs <strong>5x</strong> more than turning away a good one. So the project:</p>
+<ol>
+<li>Compares an interpretable baseline (logistic regression) with gradient boosting.</li>
+<li>Picks the approval threshold that minimises expected cost, using out-of-fold predictions on the training set only. The test set is never used for tuning.</li>
+<li>Uses permutation importance to show which applicant features drive each decision.</li>
+</ol>
+<h2>Results (25% stratified hold-out)</h2>
+<table>
+<thead>
+<tr>
+  <th>Model</th>
+  <th>CV ROC-AUC</th>
+  <th>Test ROC-AUC</th>
+  <th>Test PR-AUC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Logistic Regression</td>
+  <td>0.765 ± 0.039</td>
+  <td><strong>0.807</strong></td>
+  <td>0.643</td>
+</tr>
+<tr>
+  <td>Gradient Boosting</td>
+  <td>0.757 ± 0.015</td>
+  <td>0.798</td>
+  <td>0.653</td>
+</tr>
+</tbody>
+</table>
+<p>The strongest risk drivers are <strong>checking account status</strong>, <strong>credit amount</strong>, <strong>loan purpose</strong>, <strong>credit history</strong> and <strong>loan duration</strong>. These match standard credit-underwriting practice.</p>
+<p><strong>What I learned:</strong> On a dataset this small (1,000 rows), the simple linear model did as well as gradient boosting and is easier to explain to a credit committee. The threshold tuned for cost lowered cost for gradient boosting (155 → 144). For logistic regression it did <em>not</em> lower cost on the test set (123 → 146). With only 250 test rows, a tuned threshold carries a lot of variance, and that should be checked before it goes into production.</p>
+<p>The full table is in <a href="https://github.com/Akshu577/credit-risk-model/blob/main/reports/metrics.md"><code>reports/metrics.md</code></a> and the importances are in <a href="https://github.com/Akshu577/credit-risk-model/blob/main/reports/feature_importance.csv"><code>reports/feature_importance.csv</code></a>.</p>
+<h2>Run it</h2>
+<pre><code class="language-bash">pip install -r requirements.txt
+python src/train.py
+</code></pre>
+<p>The dataset downloads from OpenML on the first run.</p>
+
+</body></html>
