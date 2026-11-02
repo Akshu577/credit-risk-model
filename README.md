@@ -1,5 +1,7 @@
 # Credit Risk Model
 
+**Live page:** https://akshu577.github.io/credit-risk-model/
+
 Predicts whether a loan applicant is a bad credit risk, using the public German Credit dataset (1,000 applicants, UCI / OpenML `credit-g`). The model is judged on what errors cost the bank, not only on accuracy.
 
 ## Why cost matters
